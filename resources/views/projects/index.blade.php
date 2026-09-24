@@ -25,6 +25,7 @@
                     <th class="py-3 px-4 text-left border-b border-gray-700">Judul Project</th>
                     <th class="py-3 px-4 text-left border-b border-gray-700">Deskripsi</th>
                     <th class="py-3 px-4 text-left border-b border-gray-700">Tanggal Dibuat</th>
+                    <th class="py-3 px-4 text-left border-b border-gray-700">Edit</th>
                 </tr>
             </thead>
 
@@ -42,6 +43,11 @@
                         </td>
                         <td class="py-3 px-4">
                             {{ $project->created_at->format('d M Y') }}
+                        </td>
+                        <td class="py-3 px-4">
+                            <a href="{{ route('projects.edit', $project->id) }}" class="inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">
+    Edit
+</a>
                         </td>
                     </tr>
                 @empty
