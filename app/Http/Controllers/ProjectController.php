@@ -6,14 +6,24 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index()
-    {
-        $data = array (
-        'id' => " projects",
-        'projects' => Project :: all()
-    );
-    return view ('projects.index') ->with ( $data );
- }
+    public function index(Request $request)
+{
+    $search  = $request->input('search');
+    $perPage = $request->input('per_page', 10);
+
+    if (! in_array($perPage, [5, 10, 25])) {
+        $perPage = 10;
+    }
+
+    $projects = Project::when($search, function ($query) use ($search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        })
+        ->orderBy('id', 'desc')
+        ->paginate($perPage)
+        ->withQueryString();
+
+    return view('projects.index', compact('projects', 'search', 'perPage'));
+}
 
     public function create ()
     {
@@ -54,8 +64,20 @@ class ProjectController extends Controller
     ]);
     $project = Project::findOrFail($id);
     $project->update($validatedData);
-    return redirect()->route('projects.index');
+    return redirect()->route('projects.index')->with('success', 'Project Berhasil Diperbarui!');
     }
+
+
+    public function destroy(string $id)
+{
+    $project = Project::findOrFail($id);
+    
+    // 1. Eksekusi hapus data dari database TERLEBIH DAHULU
+    $project->delete();
+    
+    // 2. SETELAH terhapus, BARU alihkan ke halaman index
+    return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus!');
+}
 
 
 

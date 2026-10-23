@@ -15,7 +15,19 @@
             {{ session('success') }}
         </div>
     @endif
+    <form method="GET" class="mb-4">
+    <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul...">
 
+    <select name="per_page" onchange="this.form.submit()">
+        @foreach ([5, 10, 25] as $jumlah)
+            <option value="{{ $jumlah }}" {{ $perPage == $jumlah ? 'selected' : '' }}>
+                {{ $jumlah }} per halaman
+            </option>
+        @endforeach
+    </select>
+
+    <button type="submit">Cari</button>
+    </form>
     <!-- Wrapper tabel dengan overflow-x-auto agar responsif di layar kecil -->
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="min-w-full border-collapse">
@@ -33,7 +45,7 @@
                 @forelse ($projects as $index => $project)
                     <tr class="border-b hover:bg-gray-50">
                         <td class="py-3 px-4">
-                            {{ $index + 1 }}
+                            {{ $projects->firstItem() + $loop->index }}
                         </td>
                         <td class="py-3 px-4">
                             {{ $project->title }}
@@ -61,4 +73,17 @@
         </table>
     </div>
 </div>
+<div class="mt-4 text-sm text-gray-600">
+    Halaman : {{ $projects->currentPage() }} <br>
+    Jumlah Data : {{ $projects->total() }} <br>
+    Data Per Halaman : {{ $projects->perPage() }}
+</div>
+
+<div class="mt-4">
+    {{ $projects->links() }}
+</div>
 @endsection
+
+
+
+
