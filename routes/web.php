@@ -1,10 +1,34 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('home'))->name('home');
-Route::get('/about', fn() => view('about'))->name('about');
-Route::get('/education', fn() => view('education'))->name('education');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-Route::resource('projects', ProjectController::class);
+Route::get('/home', function () {
+    return view('home');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified', 'admin'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    
+    Route::get('/post/profile-saya', function () {
+        return view('projects.profile-saya');
+    })->name('post.profile-saya');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    Route::prefix('post')->middleware('admin')->group(function () {
+        Route::resource('projects', ProjectController::class);
+    });
+});
+
+require __DIR__.'/auth.php';

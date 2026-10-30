@@ -16,5 +16,6 @@ class PostTableSeeder extends Seeder
                 'description' => 'Deskripsi untuk project judul ke-' . $i,
             ]);
         }
+        
     }
 }
