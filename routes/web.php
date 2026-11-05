@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController; // <-- 1. Tambahkan import ini
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -12,9 +13,9 @@ Route::get('/home', function () {
     return view('home');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'admin'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     
@@ -26,7 +27,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::prefix('post')->middleware('admin')->group(function () {
+    // 2. Sesuaikan grup prefix 'post' dengan Langkah 3 di modul:
+    Route::prefix('post')->name('post.')->middleware('admin')->group(function () {
+        Route::resource('dashboard', DashboardController::class);
         Route::resource('projects', ProjectController::class);
     });
 });
