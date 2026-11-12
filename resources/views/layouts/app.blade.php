@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>@yield('title', config('app.name', 'Laravel'))</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -29,8 +29,10 @@
 
             <!-- Page Content -->
             <main>
+                {{-- Halaman yang memakai @extends('layouts.app') mengisi @yield('content'),
+                     halaman yang memakai <x-app-layout> mengisi $slot --}}
                 @yield('content')
-                {{ $slot }}
+                {{ $slot ?? '' }}
             </main>
         </div>
     </body>

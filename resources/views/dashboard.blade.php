@@ -6,45 +6,10 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Bagian Stat Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="p-6 bg-white shadow sm:rounded-lg">
-                    <div class="text-sm text-gray-500">Total Projects</div>
-                    <div class="text-2xl font-bold">{{ $totalProjects }}</div>
-                </div>
-                <div class="p-6 bg-white shadow sm:rounded-lg">
-                    <div class="text-sm text-gray-500">Total Categories</div>
-                    <div class="text-2xl font-bold">{{ $totalCategories }}</div>
-                </div>
-                <div class="p-6 bg-white shadow sm:rounded-lg">
-                    <div class="text-sm text-gray-500">Total Technologies</div>
-                    <div class="text-2xl font-bold">{{ $totalTechnologies }}</div>
-                </div>
-                <div class="p-6 bg-white shadow sm:rounded-lg">
-                    <div class="text-sm text-gray-500">Total Skills</div>
-                    <div class="text-2xl font-bold">{{ $totalSkills }}</div>
-                </div>
-            </div>
-
-            <!-- Bagian Latest Projects -->
-            <div class="p-6 bg-white shadow sm:rounded-lg">
-                <h3 class="text-lg font-semibold mb-4">5 Proyek Terbaru</h3>
-                <ul class="divide-y divide-gray-200">
-                    @forelse ($latestProjects as $project)
-                        <li class="py-3 flex justify-between">
-                            <div>
-                                <p class="font-medium">{{ $project->title }}</p>
-                                <p class="text-sm text-gray-500">{{ $project->description }}</p>
-                            </div>
-                            <span class="text-sm text-gray-600">
-                                {{ $project->category->name ?? 'Tanpa Kategori' }}
-                            </span>
-                        </li>
-                    @empty
-                        <li class="py-3 text-gray-500">Belum ada proyek.</li>
-                    @endforelse
-                </ul>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900">
+                Halo {{ Auth::user()->name }}, kamu sudah login.
+                Lihat <a href="{{ route('projects') }}" class="text-blue-600 underline">daftar project</a>.
             </div>
         </div>
     </div>

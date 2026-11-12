@@ -35,9 +35,9 @@ class DatabaseSeeder extends Seeder
 
         // 2. Buat Data Dummy Skills & Technologies (Supaya Dashboard tidak 0)
         Skill::insert([
-            ['name' => 'Web Development', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => '3D Modeling', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'UI/UX Design', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Web Development', 'level' => 'Intermediate', 'percentage' => 80, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => '3D Modeling', 'level' => 'Beginner', 'percentage' => 60, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'UI/UX Design', 'level' => 'Intermediate', 'percentage' => 70, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         Technology::insert([
@@ -47,7 +47,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Panggil Seeder Category dan Project
-        // Catatan: Pastikan nama file & class categorySeeder sudah diubah jadi CategorySeeder (C besar)
         $this->call([
             CategorySeeder::class,
             RandomProjectGenerator::class,

@@ -2,20 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
+use App\Models\Project;
 use Illuminate\Database\Seeder;
 
 class RandomProjectGenerator extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        $categoryIds = Category::pluck('id');
+
         for ($i = 1; $i <= 25; $i++) {
-            \App\Models\Project::create([
-                'title' => fake()->sentence(3), // Generate a random title with 3 words
-                'description' => fake()->paragraph(2), // Generate a random description with 2 paragraphs
+            Project::create([
+                'title'       => fake()->sentence(3),
+                'description' => fake()->paragraph(2),
+                'category_id' => $categoryIds->isNotEmpty() ? $categoryIds->random() : null,
+                'status'      => fake()->randomElement(['published', 'draft']),
             ]);
         }
     }
