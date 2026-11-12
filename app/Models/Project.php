@@ -11,8 +11,22 @@ class Project extends Model
 
     // Hanya kolom di $fillable yang boleh diisi lewat create()/update() (mass assignment).
     // Tanpa 'thumbnail' di sini, path gambar tidak akan tersimpan walau tidak ada error.
-    protected $fillable = ['title', 'description', 'category_id', 'thumbnail', 'status'];
+    protected $fillable = [
+    'title', 'slug', 'category_id', 'short_description', 'description',
+    'status', 'project_date', 'is_featured', 'project_url',
+    'repository_url', 'thumbnail', 'name'
+    ];
 
+    public function technologies()
+    {
+        return $this->belongsToMany(Technology::class);
+    }
+    
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
     public function category()
     {
         return $this->belongsTo(Category::class);

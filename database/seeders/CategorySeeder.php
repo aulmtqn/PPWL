@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // Dropdown kategori butuh minimal satu baris di tabel categories
-        foreach (['Web', 'Mobile', 'Desain'] as $name) {
-            Category::firstOrCreate(['name' => $name]);
-        }
+        //
     }
 }

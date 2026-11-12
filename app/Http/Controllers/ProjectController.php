@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Project;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -32,23 +35,27 @@ class ProjectController extends Controller
 
     public function create()
     {
-        // Dropdown kategori butuh data dari tabel categories
         return view('posts.projects.create', [
-            'categories' => Category::orderBy('name')->get(),
+            'categories'   => Category::orderBy('name')->get(),
+            'technologies' => Technology::orderBy('name')->get(),
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate($this->rules());
+        $validated['slug'] = Str::slug($validated['title']);
 
         if ($request->hasFile('thumbnail')) {
-            // Selalu tulis disk 'public', kalau tidak file masuk disk local dan tidak bisa dibuka browser
             $validated['thumbnail'] = $request->file('thumbnail')
                 ->store('projects/thumbnails', 'public');
         }
 
-        Project::create($validated);
+        $technologyIds = $validated['technologies'] ?? [];
+        unset($validated['technologies']); // bukan kolom tabel projects
+
+        $project = Project::create($validated);
+        $project->technologies()->attach($technologyIds);
 
         return redirect()->route('post.projects.index')
             ->with('success', 'Project berhasil ditambahkan.');
@@ -56,29 +63,33 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
-        $project->load('images');
+        $project->load(['technologies', 'images']);
 
         return view('posts.projects.edit', [
-            'project'    => $project,
-            'categories' => Category::orderBy('name')->get(),
+            'project'      => $project,
+            'categories'   => Category::orderBy('name')->get(),
+            'technologies' => Technology::orderBy('name')->get(),
         ]);
     }
 
     public function update(Request $request, Project $project)
     {
-        $validated = $request->validate($this->rules());
+        $validated = $request->validate($this->rules($project));
+        $validated['slug'] = Str::slug($validated['title']);
 
         if ($request->hasFile('thumbnail')) {
-            // Hapus file lama dulu supaya tidak menumpuk di storage
             if ($project->thumbnail) {
                 Storage::disk('public')->delete($project->thumbnail);
             }
-
             $validated['thumbnail'] = $request->file('thumbnail')
                 ->store('projects/thumbnails', 'public');
         }
 
+        $technologyIds = $validated['technologies'] ?? [];
+        unset($validated['technologies']);
+
         $project->update($validated);
+        $project->technologies()->sync($technologyIds);
 
         return redirect()->route('post.projects.index')
             ->with('success', 'Project berhasil diperbarui.');
@@ -86,7 +97,6 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        // Hapus thumbnail dan semua gambar gallery dari storage
         if ($project->thumbnail) {
             Storage::disk('public')->delete($project->thumbnail);
         }
@@ -95,22 +105,26 @@ class ProjectController extends Controller
             Storage::disk('public')->delete($image->image);
         }
 
-        $project->delete(); // baris project_images ikut hilang (cascadeOnDelete)
+        $project->delete();
 
         return redirect()->route('post.projects.index')
             ->with('success', 'Project dihapus.');
     }
 
-    // Aturan validasi dipakai bersama oleh store() dan update()
-    private function rules(): array
+    private function rules(?Project $project = null): array
     {
         return [
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string|min:10',
-            'category_id' => 'required|exists:categories,id',
-            'status'      => 'required|in:draft,published',
-            'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp'
-                           . '|max:2048|dimensions:min_width=400,min_height=300',
+            'title'             => ['required', 'string', 'max:255', Rule::unique('projects', 'title')->ignore($project?->id)],
+            'category_id'       => 'required|exists:categories,id',
+            'short_description' => 'nullable|max:255',
+            'description'       => 'nullable|string',
+            'status'            => 'required|in:draft,published',
+            'project_date'      => 'nullable|date',
+            'project_url'       => 'nullable|url|max:255',
+            'repository_url'    => 'nullable|url|max:255',
+            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=400,min_height=300',
+            'technologies'      => 'nullable|array',
+            'technologies.*'    => 'exists:technologies,id',
         ];
     }
 }
